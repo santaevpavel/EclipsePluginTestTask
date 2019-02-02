@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.eclipse.debug.core.launchConfigurationTypes">
+      <launchConfigurationType
+            delegate="ru.santaev.CompositeLaunchConfigurationDelegate"
+            id="CompositeLaunchConfiguration.launchConfigurationType"
+            modes="run, debug"
+            name="Composite Launch">
+      </launchConfigurationType>
+   </extension>
+
+<extension point="org.eclipse.debug.core.launchModes">
+	<launchMode
+		label="%run"
+		mode="run">
+	</launchMode>
+	<launchMode
+		label="%debug"
+		mode="debug">
+	</launchMode>
+</extension>
+<extension
+      point="org.eclipse.debug.core.launchDelegates">
+   <launchDelegate
+         delegate="ru.santaev.CompositeLaunchConfigurationDelegate"
+         id="CompositeLaunchConfiguration.launchDelegate"
+         modes="run"
+         name="Delegate Name">
+   </launchDelegate>
+</extension>
+<extension
+      point="org.eclipse.debug.core.sourceLocators">
+   <sourceLocator
+         class="ru.santaev.SourceLocator"
+         id="CompositeLaunchConfiguration.sourceLocator"
+         name="name">
+   </sourceLocator>
+</extension>
+<extension
+      point="org.eclipse.debug.ui.launchConfigurationTabGroups">
+   <launchConfigurationTabGroup
+         class="ru.santaev.CompositeLaunchConfigurationTabGroup"
+         id="CompositeLaunchConfiguration.launchConfigurationTabGroup"
+         type="CompositeLaunchConfiguration.launchConfigurationType">
+   </launchConfigurationTabGroup>
+</extension>
+
+</plugin>
