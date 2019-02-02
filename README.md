@@ -1,0 +1,2 @@
+# EclipsePluginTestTask
+Test task
