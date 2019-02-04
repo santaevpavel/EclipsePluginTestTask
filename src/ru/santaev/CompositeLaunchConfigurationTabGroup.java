@@ -10,6 +10,8 @@ import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.debug.ui.ILaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationTabGroup;
 
+import ru.santaev.view.CompositeLaunchConfigurationTab;
+
 public class CompositeLaunchConfigurationTabGroup implements ILaunchConfigurationTabGroup {
 
 	private List<CompositeLaunchConfigurationTab> tabs = new ArrayList<>();
