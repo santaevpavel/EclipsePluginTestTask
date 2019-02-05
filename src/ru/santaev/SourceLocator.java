@@ -10,5 +10,4 @@ public class SourceLocator implements ISourceLocator {
 		System.out.println("getSourceElement");
 		return null;
 	}
-
 }

@@ -1,22 +1,64 @@
 package ru.santaev.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Optional;
+
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.debug.core.DebugPlugin;
+import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchManager;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class CompositeLaunchConfigurationTabViewModel {
 	
-	public ObservableList<Launch> launches = FXCollections.observableArrayList();
+	public ObservableList<Launch> allLaunchConfigurations = FXCollections.observableArrayList();
+	public ObservableList<Launch> resultLaunchConfigurations = FXCollections.observableArrayList();
+	
+	private List<ILaunchConfiguration> rawLaunchConfigurations = new ArrayList<>();
 	
 	public CompositeLaunchConfigurationTabViewModel() {
-		launches.addAll(new Launch(0, "Launch1"), new Launch(1, "Launch2")); 
+		fetchLaunchConfigurations();
+	}
+	
+	public void add(long id) {
+		if (0 > id || allLaunchConfigurations.size() <= id) {
+			return;
+		}
+		resultLaunchConfigurations.add(allLaunchConfigurations.get((int) id));
 	}
 	
 	public void remove(long id) {
-		Optional<Launch> itemToRemove = launches.stream().filter(i -> i.getId() == id).findFirst();
+		Optional<Launch> itemToRemove = allLaunchConfigurations.stream().filter(i -> i.getId() == id).findFirst();
 		if (itemToRemove.isPresent()) {
-			launches.remove(itemToRemove.get());
+			allLaunchConfigurations.remove(itemToRemove.get());
+		}
+	}
+	
+	private void fetchLaunchConfigurations() {
+		ILaunchManager manager = DebugPlugin.getDefault().getLaunchManager();
+		try {
+			rawLaunchConfigurations = Arrays.asList(manager.getLaunchConfigurations());
+			Iterator<String > names = rawLaunchConfigurations
+				.stream()
+				.map(i -> {
+					try {
+						return i.getType().getName() + ": "+ i.getName();
+					} catch (CoreException e) {
+						return "Unknown: " + i.getName();
+					}
+				})
+				.iterator();
+			int idx = 0;
+			while (names.hasNext()) {
+				allLaunchConfigurations.add(new Launch(idx++, names.next()));
+			}
+		} catch (CoreException e) {
+			e.printStackTrace();
 		}
 	}
 	

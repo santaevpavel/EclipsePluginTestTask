@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.debug.core.ILaunch;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.model.ILaunchConfigurationDelegate;
+import org.eclipse.debug.internal.ui.launchConfigurations.LaunchConfigurationManager;
 
 public class CompositeLaunchConfigurationDelegate implements ILaunchConfigurationDelegate {
 

@@ -19,6 +19,7 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 	private CompositeLaunchConfigurationTabViewModel viewModel = new CompositeLaunchConfigurationTabViewModel();
 	private ICompositeLaunchConfigurationTabControlCreator controlCreator = new CompositeLaunchConfigurationTabControlCreator();
 	private Controls controls;
+	private java.util.List<Launch> launches;
 	
 	@Override
 	public void createControl(Composite parent) {
@@ -29,19 +30,32 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				viewModel.remove(viewModel.launches.stream().findFirst().get().getId());
+				viewModel.remove(viewModel.allLaunchConfigurations.stream().findFirst().get().getId());
 			}
 			
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e) {	
 			}
 		});
-		
-		viewModel.launches.addListener((ListChangeListener<Launch>) c -> {
-			java.util.List<String> names = c.getList().stream().map(t -> t.getName()).collect(Collectors.toList());
-			controls.resultLaunchConfigurationsList.removeAll();
-			controls.resultLaunchConfigurationsList.setItems(names.toArray(new String[names.size()])); 
+		controls.addButton.addSelectionListener(new SelectionListener() {
+			
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				int selectionIdx = controls.allLaunchConfigurationsList.getSelectionIndex();
+				if (selectionIdx < 0 || launches == null) {
+					return;
+				}
+				viewModel.add(launches.get(selectionIdx).getId());
+			}
+			
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e) {	
+			}
 		});
+		viewModel.allLaunchConfigurations.addListener((ListChangeListener<Launch>) c -> onAllLaunchesListChanged());
+		viewModel.resultLaunchConfigurations.addListener((ListChangeListener<Launch>) c -> onResultLaunchesListChanged());
+		onAllLaunchesListChanged();
+		onResultLaunchesListChanged();
 	}
 
 	@Override
@@ -62,6 +76,19 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 	@Override
 	public String getName() {
 		return "Main";
+	}
+	
+	private void onResultLaunchesListChanged() {
+		java.util.List<String> names = viewModel.resultLaunchConfigurations.stream().map(t -> t.getName()).collect(Collectors.toList());
+		controls.resultLaunchConfigurationsList.removeAll();
+		controls.resultLaunchConfigurationsList.setItems(names.toArray(new String[names.size()])); 
+	}
+	
+	private void onAllLaunchesListChanged() {
+		launches = viewModel.allLaunchConfigurations;
+		java.util.List<String> names = viewModel.allLaunchConfigurations.stream().map(t -> t.getName()).collect(Collectors.toList());
+		controls.allLaunchConfigurationsList.removeAll();
+		controls.allLaunchConfigurationsList.setItems(names.toArray(new String[names.size()])); 
 	}
 	
 	protected static class Controls {
