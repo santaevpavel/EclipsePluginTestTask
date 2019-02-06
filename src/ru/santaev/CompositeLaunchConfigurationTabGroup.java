@@ -18,7 +18,7 @@ public class CompositeLaunchConfigurationTabGroup implements ILaunchConfiguratio
 	
 	@Override
 	public void createTabs(ILaunchConfigurationDialog dialog, String mode) {
-		tabs.add(new CompositeLaunchConfigurationTab());
+		tabs.add(new CompositeLaunchConfigurationTab(dialog));
 	}
 
 	@Override
@@ -29,24 +29,25 @@ public class CompositeLaunchConfigurationTabGroup implements ILaunchConfiguratio
 	@Override
 	public void dispose() {
 		// TODO Auto-generated method stub
+		System.out.println("!! dispose");
 	}
 
 	@Override
 	public void setDefaults(ILaunchConfigurationWorkingCopy configuration) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("!! setDefaults");
 	}
 
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("!! initializeFrom");
 	}
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
 		// TODO Auto-generated method stub
-		
+		System.out.println("!! performApply");
 	}
 
 	@Override

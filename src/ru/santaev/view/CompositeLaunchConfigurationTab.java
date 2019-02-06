@@ -2,24 +2,34 @@ package ru.santaev.view;
 
 import java.util.stream.Collectors;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
+import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import ru.santaev.view.CompositeLaunchConfigurationTabViewModel.Launch;
+import ru.santaev.view.CompositeLaunchConfigurationTabViewModel.StoreData;
 
 public class CompositeLaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 
+	private static final String ATTR_STORE_DATA_LAUNCHES = "launches";
+	
 	private CompositeLaunchConfigurationTabViewModel viewModel = new CompositeLaunchConfigurationTabViewModel();
 	private ICompositeLaunchConfigurationTabControlCreator controlCreator = new CompositeLaunchConfigurationTabControlCreator();
 	private Controls controls;
 	
+	public CompositeLaunchConfigurationTab(ILaunchConfigurationDialog dialog) {
+		setLaunchConfigurationDialog(dialog);
+	}
+
 	@Override
 	public void createControl(Composite parent) {
 		controls = controlCreator.create(parent);
@@ -57,6 +67,7 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 		});
 		viewModel.allLaunchConfigurations.addListener((ListChangeListener<Launch>) c -> onAllLaunchesListChanged());
 		viewModel.resultLaunchConfigurations.addListener((ListChangeListener<Launch>) c -> onResultLaunchesListChanged());
+		viewModel.getIsDirtyObservable().addListener((ChangeListener<Boolean>) (value, arg1, arg2) -> onIsDirtyChanged(value.getValue()));
 		onAllLaunchesListChanged();
 		onResultLaunchesListChanged();
 	}
@@ -68,12 +79,18 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
-		System.out.println("initializeFrom");
+		try {
+			System.out.println("initializeFrom " + configuration.getAttributes());
+		} catch (CoreException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		System.out.println("performApply");
+		System.out.println("performApply " + configuration);
+		StoreData data = viewModel.getData();
+		configuration.setAttribute(ATTR_STORE_DATA_LAUNCHES, data.launches);
 	}
 
 	@Override
@@ -84,13 +101,18 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 	private void onResultLaunchesListChanged() {
 		java.util.List<String> names = viewModel.resultLaunchConfigurations.stream().map(t -> t.getName()).collect(Collectors.toList());
 		controls.resultLaunchConfigurationsList.removeAll();
-		controls.resultLaunchConfigurationsList.setItems(names.toArray(new String[names.size()])); 
+		controls.resultLaunchConfigurationsList.setItems(names.toArray(new String[names.size()]));
+		scheduleUpdateJob();
 	}
 	
 	private void onAllLaunchesListChanged() {
 		java.util.List<String> names = viewModel.allLaunchConfigurations.stream().map(t -> t.getName()).collect(Collectors.toList());
 		controls.allLaunchConfigurationsList.removeAll();
-		controls.allLaunchConfigurationsList.setItems(names.toArray(new String[names.size()])); 
+		controls.allLaunchConfigurationsList.setItems(names.toArray(new String[names.size()]));
+	}
+	
+	private void onIsDirtyChanged(boolean value) {
+		setDirty(value);
 	}
 	
 	protected static class Controls {
