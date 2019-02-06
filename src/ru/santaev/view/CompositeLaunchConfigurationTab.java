@@ -19,7 +19,6 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 	private CompositeLaunchConfigurationTabViewModel viewModel = new CompositeLaunchConfigurationTabViewModel();
 	private ICompositeLaunchConfigurationTabControlCreator controlCreator = new CompositeLaunchConfigurationTabControlCreator();
 	private Controls controls;
-	private java.util.List<Launch> launches;
 	
 	@Override
 	public void createControl(Composite parent) {
@@ -30,7 +29,11 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 			
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				viewModel.remove(viewModel.allLaunchConfigurations.stream().findFirst().get().getId());
+				int selectionIdx = controls.resultLaunchConfigurationsList.getSelectionIndex();
+				if (selectionIdx < 0) {
+					return;
+				}
+				viewModel.removeLaunchConfigurationFromCompositeLaunch(selectionIdx);
 			}
 			
 			@Override
@@ -42,10 +45,10 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				int selectionIdx = controls.allLaunchConfigurationsList.getSelectionIndex();
-				if (selectionIdx < 0 || launches == null) {
+				if (selectionIdx < 0) {
 					return;
 				}
-				viewModel.add(launches.get(selectionIdx).getId());
+				viewModel.addLaunchConfigurationToCompositeLaunch(selectionIdx);
 			}
 			
 			@Override
@@ -85,7 +88,6 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 	}
 	
 	private void onAllLaunchesListChanged() {
-		launches = viewModel.allLaunchConfigurations;
 		java.util.List<String> names = viewModel.allLaunchConfigurations.stream().map(t -> t.getName()).collect(Collectors.toList());
 		controls.allLaunchConfigurationsList.removeAll();
 		controls.allLaunchConfigurationsList.setItems(names.toArray(new String[names.size()])); 

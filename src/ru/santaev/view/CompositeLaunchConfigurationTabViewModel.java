@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
@@ -25,18 +23,13 @@ public class CompositeLaunchConfigurationTabViewModel {
 		fetchLaunchConfigurations();
 	}
 	
-	public void add(long id) {
-		if (0 > id || allLaunchConfigurations.size() <= id) {
-			return;
-		}
-		resultLaunchConfigurations.add(allLaunchConfigurations.get((int) id));
+	public void addLaunchConfigurationToCompositeLaunch(int idx) {
+		resultLaunchConfigurations.add(allLaunchConfigurations.get(idx));
 	}
 	
-	public void remove(long id) {
-		Optional<Launch> itemToRemove = allLaunchConfigurations.stream().filter(i -> i.getId() == id).findFirst();
-		if (itemToRemove.isPresent()) {
-			allLaunchConfigurations.remove(itemToRemove.get());
-		}
+	public void removeLaunchConfigurationFromCompositeLaunch(int idx) {
+		Launch itemToRemove = resultLaunchConfigurations.get(idx);
+		resultLaunchConfigurations.remove(itemToRemove);
 	}
 	
 	private void fetchLaunchConfigurations() {
