@@ -16,11 +16,8 @@ import org.eclipse.swt.widgets.List;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import ru.santaev.view.CompositeLaunchConfigurationTabViewModel.Launch;
-import ru.santaev.view.CompositeLaunchConfigurationTabViewModel.StoreData;
 
 public class CompositeLaunchConfigurationTab extends AbstractLaunchConfigurationTab {
-
-	private static final String ATTR_STORE_DATA_LAUNCHES = "launches";
 	
 	private CompositeLaunchConfigurationTabViewModel viewModel = new CompositeLaunchConfigurationTabViewModel();
 	private ICompositeLaunchConfigurationTabControlCreator controlCreator = new CompositeLaunchConfigurationTabControlCreator();
@@ -88,9 +85,7 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		System.out.println("performApply " + configuration);
-		StoreData data = viewModel.getData();
-		configuration.setAttribute(ATTR_STORE_DATA_LAUNCHES, data.launches);
+		//viewModel.applyConfiguration();
 	}
 
 	@Override

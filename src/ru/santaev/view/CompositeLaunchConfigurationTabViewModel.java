@@ -9,12 +9,16 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.DebugPlugin;
 import org.eclipse.debug.core.ILaunchConfiguration;
+import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import ru.santaev.model.CompositeLaunchConfigurationPreparedData;
+import ru.santaev.model.CompositeLaunchConfigurationPreparedDataRepository;
+import ru.santaev.model.ICompositeLaunchConfigurationPreparedDataRepository;
 
 public class CompositeLaunchConfigurationTabViewModel {
 	
@@ -24,6 +28,9 @@ public class CompositeLaunchConfigurationTabViewModel {
 
 	private List<ILaunchConfiguration> rawLaunchConfigurations = new ArrayList<>();
 	private List<ILaunchConfiguration> rawResultLaunchConfigurations = new ArrayList<>();
+	
+	private ICompositeLaunchConfigurationPreparedDataRepository repository = new CompositeLaunchConfigurationPreparedDataRepository();
+	private CompositeLaunchConfigurationPreparedData launchConfigurationData = new CompositeLaunchConfigurationPreparedData();
 	
 	public CompositeLaunchConfigurationTabViewModel() {
 		fetchLaunchConfigurations();
@@ -43,6 +50,10 @@ public class CompositeLaunchConfigurationTabViewModel {
 	
 	public ObservableBooleanValue getIsDirtyObservable() {
 		return isDirty;
+	}
+	
+	public void applyConfiguration(ILaunchConfigurationWorkingCopy configuration) {
+		repository.saveConfiguration(configuration, launchConfigurationData);
 	}
 	
 	private void fetchLaunchConfigurations() {
@@ -68,27 +79,9 @@ public class CompositeLaunchConfigurationTabViewModel {
 		}
 	}
 	
-	public StoreData getData() {
-		List<String> launches = rawResultLaunchConfigurations
-				.stream()
-				.map(item -> getLaunchCOnfigurationStoreData(item))
-				.collect(Collectors.toList());
-		StoreData data = new StoreData();
-		data.launches = launches;
-		return data;
-	}
-	
-	private String getLaunchCOnfigurationStoreData(ILaunchConfiguration launchConfiguration) {
-		try {
-			return launchConfiguration.getMemento();
-		} catch (CoreException e) {
-			return null;
-		}
-	}
-	
-	class StoreData {
-		public List<String> launches;
-	}
+	/*
+	 * public class StoreData { public List<String> launches; }
+	 */
 	
 	class Launch {
 		
