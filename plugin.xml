@@ -10,17 +10,6 @@
             name="Composite Launch">
       </launchConfigurationType>
    </extension>
-
-<extension point="org.eclipse.debug.core.launchModes">
-	<launchMode
-		label="%run"
-		mode="run">
-	</launchMode>
-	<launchMode
-		label="%debug"
-		mode="debug">
-	</launchMode>
-</extension>
 <extension
       point="org.eclipse.debug.core.launchDelegates">
    <launchDelegate
@@ -41,7 +30,7 @@
 <extension
       point="org.eclipse.debug.ui.launchConfigurationTabGroups">
    <launchConfigurationTabGroup
-         class="ru.santaev.CompositeLaunchConfigurationTabGroup"
+         class="ru.santaev.view.CompositeLaunchConfigurationTabGroup"
          id="CompositeLaunchConfiguration.launchConfigurationTabGroup"
          type="CompositeLaunchConfiguration.launchConfigurationType">
    </launchConfigurationTabGroup>
