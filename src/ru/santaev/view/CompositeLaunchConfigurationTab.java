@@ -67,7 +67,6 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 		});
 		viewModel.allLaunchConfigurations.addListener((ListChangeListener<Launch>) c -> onAllLaunchesListChanged());
 		viewModel.resultLaunchConfigurations.addListener((ListChangeListener<Launch>) c -> onResultLaunchesListChanged());
-		viewModel.getIsDirtyObservable().addListener((ChangeListener<Boolean>) (value, arg1, arg2) -> onIsDirtyChanged(value.getValue()));
 		onAllLaunchesListChanged();
 		onResultLaunchesListChanged();
 	}
@@ -104,10 +103,6 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 		java.util.List<String> names = viewModel.allLaunchConfigurations.stream().map(t -> t.getName()).collect(Collectors.toList());
 		controls.allLaunchConfigurationsList.removeAll();
 		controls.allLaunchConfigurationsList.setItems(names.toArray(new String[names.size()]));
-	}
-	
-	private void onIsDirtyChanged(boolean value) {
-		setDirty(value);
 	}
 	
 	protected static class Controls {

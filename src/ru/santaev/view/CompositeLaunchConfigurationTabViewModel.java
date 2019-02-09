@@ -22,7 +22,6 @@ public class CompositeLaunchConfigurationTabViewModel {
 	
 	public ObservableList<Launch> allLaunchConfigurations = FXCollections.observableArrayList();
 	public ObservableList<Launch> resultLaunchConfigurations = FXCollections.observableArrayList();
-	public SimpleBooleanProperty isDirty = new SimpleBooleanProperty(false);
 
 	private List<ILaunchConfiguration> rawLaunchConfigurations = new ArrayList<>();
 	private List<ILaunchConfiguration> rawResultLaunchConfigurations = new ArrayList<>();
@@ -38,17 +37,11 @@ public class CompositeLaunchConfigurationTabViewModel {
 	public void addLaunchConfigurationToCompositeLaunch(int idx) {
 		resultLaunchConfigurations.add(allLaunchConfigurations.get(idx));
 		rawResultLaunchConfigurations.add(rawLaunchConfigurations.get(idx));
-		isDirty.set(true);
 	}
 	
 	public void removeLaunchConfigurationFromCompositeLaunch(int idx) {
-		Launch itemToRemove = resultLaunchConfigurations.get(idx);
-		resultLaunchConfigurations.remove(itemToRemove);
-		isDirty.set(true);
-	}
-	
-	public ObservableBooleanValue getIsDirtyObservable() {
-		return isDirty;
+		resultLaunchConfigurations.remove(idx);
+		rawResultLaunchConfigurations.remove(idx);
 	}
 	
 	public void applyConfiguration(ILaunchConfigurationWorkingCopy configuration) {
