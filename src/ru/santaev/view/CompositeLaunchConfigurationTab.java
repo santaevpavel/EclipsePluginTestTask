@@ -2,7 +2,6 @@ package ru.santaev.view;
 
 import java.util.stream.Collectors;
 
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
@@ -15,15 +14,17 @@ import org.eclipse.swt.widgets.List;
 
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
+import ru.santaev.factories.FactoryProvider;
 import ru.santaev.view.CompositeLaunchConfigurationTabViewModel.Launch;
 
 public class CompositeLaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 	
-	private CompositeLaunchConfigurationTabViewModel viewModel = new CompositeLaunchConfigurationTabViewModel();
+	private CompositeLaunchConfigurationTabViewModel viewModel;
 	private ICompositeLaunchConfigurationTabControlCreator controlCreator = new CompositeLaunchConfigurationTabControlCreator();
 	private Controls controls;
 	
 	public CompositeLaunchConfigurationTab(ILaunchConfigurationDialog dialog) {
+		viewModel = FactoryProvider.getInstance().getViewModelFactory().getCompositeLaunchConfigurationTabViewModel();
 		setLaunchConfigurationDialog(dialog);
 	}
 
@@ -41,6 +42,7 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 					return;
 				}
 				viewModel.removeLaunchConfigurationFromCompositeLaunch(selectionIdx);
+				scheduleUpdateJob();
 			}
 			
 			@Override
@@ -56,6 +58,7 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 					return;
 				}
 				viewModel.addLaunchConfigurationToCompositeLaunch(selectionIdx);
+				scheduleUpdateJob();
 			}
 			
 			@Override
@@ -76,16 +79,14 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 
 	@Override
 	public void initializeFrom(ILaunchConfiguration configuration) {
-		try {
-			System.out.println("initializeFrom " + configuration.getAttributes());
-		} catch (CoreException e) {
-			e.printStackTrace();
-		}
+		System.out.println("initializeFrom");
+		viewModel.restoreConfiguration(configuration);
 	}
 
 	@Override
 	public void performApply(ILaunchConfigurationWorkingCopy configuration) {
-		//viewModel.applyConfiguration();
+		System.out.println("performApply ");
+		viewModel.applyConfiguration(configuration);
 	}
 
 	@Override
@@ -97,7 +98,6 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 		java.util.List<String> names = viewModel.resultLaunchConfigurations.stream().map(t -> t.getName()).collect(Collectors.toList());
 		controls.resultLaunchConfigurationsList.removeAll();
 		controls.resultLaunchConfigurationsList.setItems(names.toArray(new String[names.size()]));
-		scheduleUpdateJob();
 	}
 	
 	private void onAllLaunchesListChanged() {

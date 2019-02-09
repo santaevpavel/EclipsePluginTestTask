@@ -42,6 +42,9 @@ public class CompositeLaunchConfigurationTabGroup implements ILaunchConfiguratio
 	public void initializeFrom(ILaunchConfiguration configuration) {
 		// TODO Auto-generated method stub
 		System.out.println("!! initializeFrom");
+		for (CompositeLaunchConfigurationTab tab : tabs) {
+			tab.initializeFrom(configuration);
+		}
 	}
 
 	@Override

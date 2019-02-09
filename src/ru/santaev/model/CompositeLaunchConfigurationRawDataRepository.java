@@ -6,14 +6,18 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
+import org.eclipse.debug.core.ILaunchManager;
 
 
 public class CompositeLaunchConfigurationRawDataRepository implements ICompositeLaunchConfigurationRawDataRepository {
 
 	private ICompositeLaunchConfigurationPreparedDataRepository repository;
+	private ILaunchManager launchManager;
 	
-	public CompositeLaunchConfigurationRawDataRepository(ICompositeLaunchConfigurationPreparedDataRepository repository) {
+	public CompositeLaunchConfigurationRawDataRepository(ICompositeLaunchConfigurationPreparedDataRepository repository,
+			ILaunchManager launchManager) {
 		this.repository = repository;
+		this.launchManager = launchManager;
 	}
 	
 	@Override
@@ -25,7 +29,13 @@ public class CompositeLaunchConfigurationRawDataRepository implements IComposite
 	@Override
 	public CompositeLaunchConfigurationRawData restoreConfiguration(ILaunchConfiguration configuration) {
 		CompositeLaunchConfigurationPreparedData data = repository.restoreConfiguration(configuration);
-		return null;
+		List<ILaunchConfiguration> launchConfigurations = data.launchDatas
+			.stream()
+			.map(momento -> getLaunchConfiguration(momento))
+			.collect(Collectors.toList());
+		CompositeLaunchConfigurationRawData rawData = new CompositeLaunchConfigurationRawData();
+		rawData.launchDatas = launchConfigurations;
+		return rawData;
 	}
 	
 	private CompositeLaunchConfigurationPreparedData prepare(CompositeLaunchConfigurationRawData rawData) {
@@ -42,6 +52,15 @@ public class CompositeLaunchConfigurationRawDataRepository implements IComposite
 		try {
 			return launchConfiguration.getMemento();
 		} catch (CoreException e) {
+			return null;
+		}
+	}
+	
+	private ILaunchConfiguration getLaunchConfiguration(String momento) {
+		try {
+			return launchManager.getLaunchConfiguration(momento);
+		} catch (CoreException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
