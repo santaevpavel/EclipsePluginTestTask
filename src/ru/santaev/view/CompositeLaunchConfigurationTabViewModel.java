@@ -11,12 +11,10 @@ import org.eclipse.debug.core.ILaunchConfiguration;
 import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableBooleanValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import ru.santaev.model.CompositeLaunchConfigurationRawData;
-import ru.santaev.model.ICompositeLaunchConfigurationRawDataRepository;
+import ru.santaev.model.configuration.CompositeLaunchConfiguration;
+import ru.santaev.model.configuration.ICompositeLaunchConfigurationRepository;
 
 public class CompositeLaunchConfigurationTabViewModel {
 	
@@ -26,10 +24,10 @@ public class CompositeLaunchConfigurationTabViewModel {
 	private List<ILaunchConfiguration> rawLaunchConfigurations = new ArrayList<>();
 	private List<ILaunchConfiguration> rawResultLaunchConfigurations = new ArrayList<>();
 
-	private CompositeLaunchConfigurationRawData launchConfigurationData = new CompositeLaunchConfigurationRawData();
-	private ICompositeLaunchConfigurationRawDataRepository repository;
+	private CompositeLaunchConfiguration launchConfigurationData = CompositeLaunchConfiguration.empty();
+	private ICompositeLaunchConfigurationRepository repository;
 	
-	public CompositeLaunchConfigurationTabViewModel(ICompositeLaunchConfigurationRawDataRepository repository) {
+	public CompositeLaunchConfigurationTabViewModel(ICompositeLaunchConfigurationRepository repository) {
 		this.repository = repository;
 		fetchLaunchConfigurations();
 	}
@@ -45,23 +43,23 @@ public class CompositeLaunchConfigurationTabViewModel {
 	}
 	
 	public void applyConfiguration(ILaunchConfigurationWorkingCopy configuration) {
-		launchConfigurationData.launchDatas = new ArrayList<>(rawResultLaunchConfigurations);
+		launchConfigurationData.setChildLaunchConfigurations(new ArrayList<>(rawResultLaunchConfigurations));
 		repository.saveConfiguration(configuration, launchConfigurationData);
 	}
 	
 	public void restoreConfiguration(ILaunchConfiguration configuration) {
-		CompositeLaunchConfigurationRawData launchConfigurationData = repository.restoreConfiguration(configuration);
+		CompositeLaunchConfiguration launchConfigurationData = repository.restoreConfiguration(configuration);
 		if (launchConfigurationData != null) {
 			this.launchConfigurationData = launchConfigurationData;
 			restoreFromLaunchConfigurationData(launchConfigurationData);
 		}
 	}
 	
-	private void restoreFromLaunchConfigurationData(CompositeLaunchConfigurationRawData data) {
+	private void restoreFromLaunchConfigurationData(CompositeLaunchConfiguration data) {
 		rawResultLaunchConfigurations.clear();
 		resultLaunchConfigurations.clear();
 		
-		for (ILaunchConfiguration launchConfigurationData: data.launchDatas) {
+		for (ILaunchConfiguration launchConfigurationData: data.getChildLaunchConfigurations()) {
 			int idx = rawLaunchConfigurations.indexOf(launchConfigurationData);
 			if (idx < 0) {
 				continue;

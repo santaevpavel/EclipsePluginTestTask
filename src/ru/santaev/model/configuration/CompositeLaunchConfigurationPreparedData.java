@@ -1,4 +1,4 @@
-package ru.santaev.model;
+package ru.santaev.model.configuration;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package ru.santaev.model;
+package ru.santaev.model.configuration;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,12 +9,12 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 
 
-public class CompositeLaunchConfigurationRawDataRepository implements ICompositeLaunchConfigurationRawDataRepository {
+public class CompositeLaunchConfigurationRepository implements ICompositeLaunchConfigurationRepository {
 
 	private ICompositeLaunchConfigurationPreparedDataRepository repository;
 	private ILaunchManager launchManager;
 	
-	public CompositeLaunchConfigurationRawDataRepository(ICompositeLaunchConfigurationPreparedDataRepository repository,
+	public CompositeLaunchConfigurationRepository(ICompositeLaunchConfigurationPreparedDataRepository repository,
 			ILaunchManager launchManager) {
 		this.repository = repository;
 		this.launchManager = launchManager;
@@ -22,24 +22,23 @@ public class CompositeLaunchConfigurationRawDataRepository implements IComposite
 	
 	@Override
 	public void saveConfiguration(ILaunchConfigurationWorkingCopy configuration,
-			CompositeLaunchConfigurationRawData data) {
+			CompositeLaunchConfiguration data) {
 		repository.saveConfiguration(configuration, prepare(data));
 	}
 
 	@Override
-	public CompositeLaunchConfigurationRawData restoreConfiguration(ILaunchConfiguration configuration) {
+	public CompositeLaunchConfiguration restoreConfiguration(ILaunchConfiguration configuration) {
 		CompositeLaunchConfigurationPreparedData data = repository.restoreConfiguration(configuration);
 		List<ILaunchConfiguration> launchConfigurations = data.launchDatas
 			.stream()
 			.map(momento -> getLaunchConfiguration(momento))
 			.collect(Collectors.toList());
-		CompositeLaunchConfigurationRawData rawData = new CompositeLaunchConfigurationRawData();
-		rawData.launchDatas = launchConfigurations;
+		CompositeLaunchConfiguration rawData = new CompositeLaunchConfiguration(launchConfigurations);
 		return rawData;
 	}
 	
-	private CompositeLaunchConfigurationPreparedData prepare(CompositeLaunchConfigurationRawData rawData) {
-		List<String> launches = rawData.launchDatas
+	private CompositeLaunchConfigurationPreparedData prepare(CompositeLaunchConfiguration rawData) {
+		List<String> launches = rawData.getChildLaunchConfigurations()
 				.stream()
 				.map(item -> getLaunchCOnfigurationStoreData(item))
 				.collect(Collectors.toList());

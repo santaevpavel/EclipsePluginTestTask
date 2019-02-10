@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 
-import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import ru.santaev.factories.FactoryProvider;
 import ru.santaev.view.CompositeLaunchConfigurationTabViewModel.Launch;

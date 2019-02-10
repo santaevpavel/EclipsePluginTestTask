@@ -1,10 +1,11 @@
 package ru.santaev.factories;
 
 import org.eclipse.debug.core.DebugPlugin;
-import ru.santaev.model.CompositeLaunchConfigurationPreparedDataRepository;
-import ru.santaev.model.CompositeLaunchConfigurationRawDataRepository;
-import ru.santaev.model.ICompositeLaunchConfigurationPreparedDataRepository;
-import ru.santaev.model.ICompositeLaunchConfigurationRawDataRepository;
+
+import ru.santaev.model.configuration.CompositeLaunchConfigurationPreparedDataRepository;
+import ru.santaev.model.configuration.CompositeLaunchConfigurationRepository;
+import ru.santaev.model.configuration.ICompositeLaunchConfigurationPreparedDataRepository;
+import ru.santaev.model.configuration.ICompositeLaunchConfigurationRepository;
 
 public class RepositoryFactory implements IRepositoryFactory {
 
@@ -12,9 +13,9 @@ public class RepositoryFactory implements IRepositoryFactory {
 		return new CompositeLaunchConfigurationPreparedDataRepository();
 	}
 	
-	public ICompositeLaunchConfigurationRawDataRepository getCompositeLaunchConfugurationRawDataRepository() {
+	public ICompositeLaunchConfigurationRepository getCompositeLaunchConfugurationRawDataRepository() {
 		ICompositeLaunchConfigurationPreparedDataRepository repository = getCompositeLaunchConfugurationPreparedDataRepository();
-		return new CompositeLaunchConfigurationRawDataRepository(repository, DebugPlugin.getDefault().getLaunchManager());
+		return new CompositeLaunchConfigurationRepository(repository, DebugPlugin.getDefault().getLaunchManager());
 	}
 	
 	public RepositoryFactory() {
