@@ -4,7 +4,7 @@
    <extension
          point="org.eclipse.debug.core.launchConfigurationTypes">
       <launchConfigurationType
-            delegate="ru.santaev.CompositeLaunchConfigurationDelegate"
+            delegate="ru.santaev.model.CompositeLaunchConfigurationDelegate"
             id="CompositeLaunchConfiguration.launchConfigurationType"
             modes="run, debug"
             name="Composite Launch">
@@ -13,7 +13,7 @@
 <extension
       point="org.eclipse.debug.core.launchDelegates">
    <launchDelegate
-         delegate="ru.santaev.CompositeLaunchConfigurationDelegate"
+         delegate="ru.santaev.model.CompositeLaunchConfigurationDelegate"
          id="CompositeLaunchConfiguration.launchDelegate"
          modes="run"
          name="Delegate Name">

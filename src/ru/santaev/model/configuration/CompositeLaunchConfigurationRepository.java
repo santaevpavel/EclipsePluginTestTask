@@ -29,25 +29,31 @@ public class CompositeLaunchConfigurationRepository implements ICompositeLaunchC
 	@Override
 	public CompositeLaunchConfiguration restoreConfiguration(ILaunchConfiguration configuration) {
 		CompositeLaunchConfigurationPreparedData data = repository.restoreConfiguration(configuration);
-		List<ILaunchConfiguration> launchConfigurations = data.launchDatas
+		List<CompositeLaunchConfiguration.ChildLaunchConfiguration> launchConfigurations = data.childLaunchConfigurations
 			.stream()
-			.map(momento -> getLaunchConfiguration(momento))
+			.map(child -> {
+				return new CompositeLaunchConfiguration.ChildLaunchConfiguration(
+						getLaunchConfiguration(child.launchConfiguration), child.delayMillis);	
+			})
 			.collect(Collectors.toList());
 		CompositeLaunchConfiguration rawData = new CompositeLaunchConfiguration(launchConfigurations);
 		return rawData;
 	}
 	
 	private CompositeLaunchConfigurationPreparedData prepare(CompositeLaunchConfiguration rawData) {
-		List<String> launches = rawData.getChildLaunchConfigurations()
+		List<CompositeLaunchConfigurationPreparedData.ChildLaunchConfiguration> launches = rawData.getChildLaunchConfigurations()
 				.stream()
-				.map(item -> getLaunchCOnfigurationStoreData(item))
+				.map(item -> {
+					String launch = getLaunchConfigurationStoreData(item.launchConfiguration);
+					return new CompositeLaunchConfigurationPreparedData.ChildLaunchConfiguration(launch, item.delayMillis);
+				})
 				.collect(Collectors.toList());
 		CompositeLaunchConfigurationPreparedData data = new CompositeLaunchConfigurationPreparedData();
-		data.launchDatas = launches;
+		data.childLaunchConfigurations = launches;
 		return data; 
 	}
 	
-	private String getLaunchCOnfigurationStoreData(ILaunchConfiguration launchConfiguration) {
+	private String getLaunchConfigurationStoreData(ILaunchConfiguration launchConfiguration) {
 		try {
 			return launchConfiguration.getMemento();
 		} catch (CoreException e) {
