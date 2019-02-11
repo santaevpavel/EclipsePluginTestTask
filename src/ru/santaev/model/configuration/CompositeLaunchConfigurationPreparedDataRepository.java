@@ -41,6 +41,7 @@ public class CompositeLaunchConfigurationPreparedDataRepository implements IComp
 			for (int i = 0; i < launches.size(); i++) {
 				childs.add(new ChildLaunchConfiguration(launches.get(i), Long.valueOf(delays.get(i))));
 			}
+			data.childLaunchConfigurations = childs;
 		} catch (CoreException e) {
 			e.printStackTrace();
 		} catch (Throwable e) {
