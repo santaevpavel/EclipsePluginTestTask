@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="libs/byte-buddy-agent-1.9.7.jar"/>
 	<classpathentry kind="lib" path="libs/mockito-core-2.24.0.jar"/>
 	<classpathentry kind="lib" path="libs/objenesis-2.6.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
