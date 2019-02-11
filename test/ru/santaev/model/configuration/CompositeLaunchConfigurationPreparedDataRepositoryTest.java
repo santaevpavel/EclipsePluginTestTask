@@ -7,7 +7,6 @@ import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CompositeLaunchConfigurationPreparedDataRepositoryTest {
@@ -35,8 +34,8 @@ public class CompositeLaunchConfigurationPreparedDataRepositoryTest {
 
 	private ILaunchConfiguration createLaunchConfiguration() throws CoreException {
 		ILaunchConfiguration configuration = mock(ILaunchConfiguration.class);
-		when(configuration.getAttribute(eq("launches"), anyList())).thenReturn(launches);
-		when(configuration.getAttribute(eq("delays"), anyList())).thenReturn(delays);
+		when(configuration.getAttribute(eq(ATTR_LAUNCHES), anyList())).thenReturn(launches);
+		when(configuration.getAttribute(eq(ATTR_DELAYS), anyList())).thenReturn(delays);
 
 		return configuration;
 	}
