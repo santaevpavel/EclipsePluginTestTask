@@ -17,34 +17,31 @@ import java.util.List;
 
 public class CompositeLaunchConfigurationRepositoryTest {
 
+	private static final int NUMBER_OF_LAUNCHES = 5;
 	private ILaunchConfiguration[] allLaunchConfigurations;
 	
 	@Before
 	public void setUp() throws Exception {
-		ILaunchConfiguration launchConfiguration1 = mock(ILaunchConfiguration.class);
-		when(launchConfiguration1.getMemento()).thenReturn("Launch1");
-		ILaunchConfiguration launchConfiguration2 = mock(ILaunchConfiguration.class);
-		when(launchConfiguration2.getMemento()).thenReturn("Launch2");
-		ILaunchConfiguration launchConfiguration3 = mock(ILaunchConfiguration.class);
-		when(launchConfiguration3.getMemento()).thenReturn("Launch3");
-		
-		allLaunchConfigurations = new ILaunchConfiguration[] {
-				launchConfiguration1, launchConfiguration2, launchConfiguration3
-		};
+		allLaunchConfigurations = new ILaunchConfiguration[NUMBER_OF_LAUNCHES];
+		for (int i = 0; i < NUMBER_OF_LAUNCHES; i++) {
+			ILaunchConfiguration launchConfiguration = mock(ILaunchConfiguration.class);
+			when(launchConfiguration.getMemento()).thenReturn("Launch" + i);
+			allLaunchConfigurations[i] = launchConfiguration;
+		}
 	}
 
 	@org.junit.Test
 	public void testRestoreSuccess() throws CoreException {
 		ICompositeLaunchConfigurationPreparedDataRepository innerRepository = createInnerRepository();
-		ILaunchManager launchManager = createLaunchManager();
-		CompositeLaunchConfigurationRepository repository = new CompositeLaunchConfigurationRepository(innerRepository, launchManager);
+		CompositeLaunchConfigurationRepository repository = new CompositeLaunchConfigurationRepository(innerRepository, 
+				createLaunchManager());
 		
 		CompositeLaunchConfiguration restoredConfiguration = repository.restoreConfiguration(any());
 		List<ChildLaunchConfiguration> childs = restoredConfiguration.getChildLaunchConfigurations();
 		
 		assertEquals(2, childs.size());
-		assertTrue(childs.contains(new CompositeLaunchConfiguration.ChildLaunchConfiguration(allLaunchConfigurations[0], 100)));
-		assertTrue(childs.contains(new CompositeLaunchConfiguration.ChildLaunchConfiguration(allLaunchConfigurations[2], 2000)));
+		assertTrue(childs.contains(new CompositeLaunchConfiguration.ChildLaunchConfiguration(allLaunchConfigurations[1], 100)));
+		assertTrue(childs.contains(new CompositeLaunchConfiguration.ChildLaunchConfiguration(allLaunchConfigurations[3], 2000)));
 	}
 	
 	@org.junit.Test
@@ -53,14 +50,13 @@ public class CompositeLaunchConfigurationRepositoryTest {
 		CompositeLaunchConfigurationRepository repository = new CompositeLaunchConfigurationRepository(innerRepository, 
 				mock(ILaunchManager.class));
 		
-		CompositeLaunchConfiguration launchConfiguration = createLaunchConfiguration();
-		repository.saveConfiguration(mock(ILaunchConfigurationWorkingCopy.class), launchConfiguration);
+		repository.saveConfiguration(mock(ILaunchConfigurationWorkingCopy.class), createLaunchConfiguration());
 		
-		CompositeLaunchConfigurationPreparedData configuration = new CompositeLaunchConfigurationPreparedData();
-		configuration.childLaunchConfigurations = List.of(
-				new CompositeLaunchConfigurationPreparedData.ChildLaunchConfiguration("Launch2", 1000),
-				new CompositeLaunchConfigurationPreparedData.ChildLaunchConfiguration("Launch3", 100)
-		);
+		CompositeLaunchConfigurationPreparedData.ChildLaunchConfiguration expectedConfiguration1 = new CompositeLaunchConfigurationPreparedData
+				.ChildLaunchConfiguration("Launch1", 1000);
+		CompositeLaunchConfigurationPreparedData.ChildLaunchConfiguration expectedConfiguration2 = new CompositeLaunchConfigurationPreparedData
+				.ChildLaunchConfiguration("Launch2", 100);
+	
 		ArgumentCaptor<CompositeLaunchConfigurationPreparedData> captor = ArgumentCaptor.forClass(
 				CompositeLaunchConfigurationPreparedData.class);		
 		verify(innerRepository).saveConfiguration(any(), captor.capture());
@@ -68,8 +64,8 @@ public class CompositeLaunchConfigurationRepositoryTest {
 		CompositeLaunchConfigurationPreparedData result = captor.getValue();
 		
 		assertEquals(2, result.childLaunchConfigurations.size());
-		assertTrue(result.childLaunchConfigurations.contains(configuration.childLaunchConfigurations.get(0)));
-		assertTrue(result.childLaunchConfigurations.contains(configuration.childLaunchConfigurations.get(1)));
+		assertTrue(result.childLaunchConfigurations.contains(expectedConfiguration1));
+		assertTrue(result.childLaunchConfigurations.contains(expectedConfiguration2));
 	}
 	
 	private ICompositeLaunchConfigurationPreparedDataRepository createInnerRepository() {
@@ -88,9 +84,10 @@ public class CompositeLaunchConfigurationRepositoryTest {
 	
 	private ILaunchManager createLaunchManager() throws CoreException {
 		ILaunchManager launchManager = mock(ILaunchManager.class);
-		when(launchManager.getLaunchConfiguration("Launch1")).thenReturn(allLaunchConfigurations[0]);
-		when(launchManager.getLaunchConfiguration("Launch2")).thenReturn(allLaunchConfigurations[1]);
-		when(launchManager.getLaunchConfiguration("Launch3")).thenReturn(allLaunchConfigurations[2]);
+		for (int i = 0; i < NUMBER_OF_LAUNCHES; i++) {
+			when(launchManager.getLaunchConfiguration("Launch" + i))
+				.thenReturn(allLaunchConfigurations[i]);
+		}
 		return launchManager;
 	}
 	
