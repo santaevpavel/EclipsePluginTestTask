@@ -31,14 +31,37 @@ public class CompositeLaunchConfigurationTabViewModelTest {
 	private Matcher<Launch>[] allLaunchMatchers;
 	private CompositeLaunchConfiguration launchConfiguration;
 
-	@SuppressWarnings("unchecked")
 	@Before
 	public void setup() throws CoreException {
+		setupLaunchConfigurations();
+		setupCompositeLaunchConfiguration();
+	}
+
+	@Test
+	public void testListOfLaunchConfigurations() throws CoreException {
+		CompositeLaunchConfigurationTabViewModel viewModel = createViewModel();
+
+		assertThat(viewModel.getAllLaunchConfigurations(), Matchers.containsInAnyOrder(allLaunchMatchers));
+	}
+
+	@Test
+	public void testRestoreConfiguration() throws CoreException {
+		CompositeLaunchConfigurationTabViewModel viewModel = createViewModel();
+		viewModel.restoreConfiguration(mock(ILaunchConfiguration.class));
+
+		Assert.assertTrue(viewModel.getIsBroken().get());
+
+		assertThat(viewModel.getResultLaunchConfigurations(), Matchers.hasSize(1));
+		assertThat(viewModel.getResultLaunchConfigurations(),
+				Matchers.containsInAnyOrder(Matchers.equalTo(new Launch(0, "LaunchType" + 0, "Launch" + 0))));
+	}
+
+	@SuppressWarnings("unchecked")
+	private void setupLaunchConfigurations() throws CoreException {
 		int size = 5;
 		allLaunchConfigurations = new ILaunchConfiguration[size];
 		allLaunch = new ArrayList<>();
 		allLaunchMatchers = new Matcher[size];
-
 		for (int i = 0; i < size; i++) {
 			ILaunchConfiguration launch = mock(ILaunchConfiguration.class);
 			ILaunchConfigurationType type = mock(ILaunchConfigurationType.class);
@@ -50,27 +73,13 @@ public class CompositeLaunchConfigurationTabViewModelTest {
 			allLaunch.add(new Launch(i, "LaunchType" + i, "Launch" + i));
 			allLaunchMatchers[i] = Matchers.equalTo(new Launch(i, "LaunchType" + i, "Launch" + i));
 		}
+	}
 
-		ILaunchConfiguration child = mock(ILaunchConfiguration.class);
+	private void setupCompositeLaunchConfiguration() {
 		List<ChildLaunchConfiguration> childs = new ArrayList<>();
-		childs.add(new ChildLaunchConfiguration(child, 100));
+		childs.add(new ChildLaunchConfiguration(allLaunchConfigurations[0], 100));
 		childs.add(null);
 		launchConfiguration = new CompositeLaunchConfiguration(childs);
-	}
-
-	@Test
-	public void testListOfLaunchConfigurations() throws CoreException {
-		CompositeLaunchConfigurationTabViewModel viewModel = createViewModel();
-		
-		assertThat(viewModel.getAllLaunchConfigurations(), Matchers.containsInAnyOrder(allLaunchMatchers));
-	}
-
-	@Test
-	public void testRestoreConfiguration() throws CoreException {
-		CompositeLaunchConfigurationTabViewModel viewModel = createViewModel();
-		viewModel.restoreConfiguration(mock(ILaunchConfiguration.class));
-		
-		Assert.assertTrue(viewModel.getIsBroken().get());
 	}
 
 	private CompositeLaunchConfigurationTabViewModel createViewModel() throws CoreException {
