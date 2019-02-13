@@ -1,8 +1,11 @@
 package ru.santaev.factories;
 
 import ru.santaev.model.configuration.ICompositeLaunchConfigurationRepository;
+import ru.santaev.model.configuration.ILaunchConfigurationRepository;
 
 public interface IRepositoryFactory {
 
-	public ICompositeLaunchConfigurationRepository getCompositeLaunchConfugurationRawDataRepository();
+	public ICompositeLaunchConfigurationRepository getCompositeLaunchConfigurationRawDataRepository();
+	
+	public ILaunchConfigurationRepository getLaunchConfigurationRepository();
 }

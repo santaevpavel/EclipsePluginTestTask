@@ -24,7 +24,7 @@ import ru.santaev.model.configuration.ICompositeLaunchConfigurationRepository;
 public class CompositeLaunchConfigurationDelegate implements ILaunchConfigurationDelegate {
 
 	private ICompositeLaunchConfigurationRepository repository = FactoryProvider.getInstance().getRepositoryFactory()
-			.getCompositeLaunchConfugurationRawDataRepository();
+			.getCompositeLaunchConfigurationRawDataRepository();
 	private ConsolePlugin consolePlugin = ConsolePlugin.getDefault();
 	private CompositeLaunchConfiguration configurationData;
 	private MessageConsole console = new MessageConsole("Composite", null);
