@@ -15,6 +15,8 @@ import org.eclipse.ui.console.ConsolePlugin;
 import org.eclipse.ui.console.IConsole;
 import org.eclipse.ui.console.MessageConsole;
 import org.eclipse.ui.console.MessageConsoleStream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import ru.santaev.factories.FactoryProvider;
 import ru.santaev.model.configuration.CompositeLaunchConfiguration;
@@ -23,6 +25,8 @@ import ru.santaev.model.configuration.ICompositeLaunchConfigurationRepository;
 
 public class CompositeLaunchConfigurationDelegate implements ILaunchConfigurationDelegate {
 
+	private static final Logger LOG = LoggerFactory.getLogger(CompositeLaunchConfigurationDelegate.class);
+	
 	private ICompositeLaunchConfigurationRepository repository = FactoryProvider.getInstance().getRepositoryFactory()
 			.getCompositeLaunchConfigurationRawDataRepository();
 	private ConsolePlugin consolePlugin = ConsolePlugin.getDefault();
@@ -31,7 +35,7 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 	private MessageConsoleStream consoleOutput = console.newMessageStream();
 
 	public CompositeLaunchConfigurationDelegate() {
-		System.out.println("CompositeLaunchConfigurationDelegate constructor");
+		LOG.debug("CompositeLaunchConfigurationDelegate constructor");
 	}
 
 	@Override
@@ -39,7 +43,7 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 			throws CoreException {
 		initConsole();
 
-		System.out.println("Mode " + mode);
+		LOG.debug("Mode " + mode);
 		monitor.beginTask("Loading configuration", IProgressMonitor.UNKNOWN);
 		loadConfiguration(configuration, launch, monitor);
 		launch(configurationData, configuration, mode, launch, monitor);
@@ -57,7 +61,7 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 
 		configurationData = repository.restoreConfiguration(configuration);
 		if (configurationData == null) {
-			System.err.println("Unable to load configuration data");
+			writeToConsole("Unable to load configuration data");
 			launch.terminate();
 		}
 		configurationData.getChildLaunchConfigurations().forEach((child) -> {
@@ -72,13 +76,13 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 			ILaunch launch, IProgressMonitor monitor) throws CoreException {
 		int numberOfLaunches = configurationData.getChildLaunchConfigurations().size();
 		long delay = 0;
-		for (ChildLaunchConfiguration subLaunchConfiguration : configurationData.getChildLaunchConfigurations()) {
-			if (subLaunchConfiguration == null) {
+		for (ChildLaunchConfiguration childLaunchConfiguration : configurationData.getChildLaunchConfigurations()) {
+			if (childLaunchConfiguration == null) {
 				continue;
 			}
 			Timer t = new Timer();
-			delay += subLaunchConfiguration.delayMillis;
-			t.schedule(new ExecuteLaunchConfigurationTask(launch, subLaunchConfiguration, monitor, mode, "Launch",
+			delay += childLaunchConfiguration.delayMillis;
+			t.schedule(new ExecuteLaunchConfigurationTask(launch, childLaunchConfiguration, monitor, mode, "Launch",
 					numberOfLaunches), delay);
 		}
 	}
@@ -124,43 +128,5 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 				writeToConsole(MessageFormat.format("Unable to launch\"{0}\"...", launchConfiguration.getName()));
 			}
 		}
-	}
-}
-
-class StubProgressMonitor implements IProgressMonitor {
-
-	@Override
-	public void beginTask(String name, int totalWork) {
-		System.out.println("Progress: " + "beginTask " + totalWork);
-	}
-
-	@Override
-	public void done() {
-		System.out.println("Progress: " + "done");
-	}
-
-	@Override
-	public void internalWorked(double work) {
-	}
-
-	@Override
-	public boolean isCanceled() {
-		return false;
-	}
-
-	@Override
-	public void setCanceled(boolean value) {
-	}
-
-	@Override
-	public void setTaskName(String name) {
-	}
-
-	@Override
-	public void subTask(String name) {
-	}
-
-	@Override
-	public void worked(int work) {
 	}
 }
