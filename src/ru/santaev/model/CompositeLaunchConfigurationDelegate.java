@@ -80,9 +80,9 @@ public class CompositeLaunchConfigurationDelegate implements ILaunchConfiguratio
 			if (childLaunchConfiguration == null) {
 				continue;
 			}
-			Timer t = new Timer();
+			Timer timer = new Timer();
 			delay += childLaunchConfiguration.delayMillis;
-			t.schedule(new ExecuteLaunchConfigurationTask(launch, childLaunchConfiguration, monitor, mode, "Launch",
+			timer.schedule(new ExecuteLaunchConfigurationTask(launch, childLaunchConfiguration, monitor, mode, "Launch",
 					numberOfLaunches), delay);
 		}
 	}
