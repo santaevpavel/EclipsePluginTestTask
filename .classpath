@@ -12,10 +12,12 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="libs/junit-4.12.jar"/>
 	<classpathentry kind="lib" path="libs/byte-buddy-1.9.7.jar"/>
 	<classpathentry kind="lib" path="libs/byte-buddy-agent-1.9.7.jar"/>
 	<classpathentry kind="lib" path="libs/mockito-core-2.24.0.jar"/>
 	<classpathentry kind="lib" path="libs/objenesis-2.6.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="libs/hamcrest-2.1.jar"/>
+	<classpathentry kind="lib" path="libs/hamcrest-core-2.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
