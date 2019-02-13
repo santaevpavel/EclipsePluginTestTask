@@ -1,5 +1,6 @@
 package ru.santaev.model.view;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
@@ -41,7 +42,7 @@ public class CompositeLaunchConfigurationTabViewModelTest {
 	public void testListOfLaunchConfigurations() throws CoreException {
 		CompositeLaunchConfigurationTabViewModel viewModel = createViewModel();
 
-		assertThat(viewModel.getAllLaunchConfigurations(), Matchers.containsInAnyOrder(allLaunchMatchers));
+		assertThat(viewModel.getAllLaunchConfigurations(), containsInAnyOrder(allLaunchMatchers));
 	}
 
 	@Test
@@ -53,9 +54,27 @@ public class CompositeLaunchConfigurationTabViewModelTest {
 
 		assertThat(viewModel.getResultLaunchConfigurations(), Matchers.hasSize(1));
 		assertThat(viewModel.getResultLaunchConfigurations(),
-				Matchers.containsInAnyOrder(Matchers.equalTo(new Launch(0, "LaunchType" + 0, "Launch" + 0))));
+				containsInAnyOrder(Matchers.equalTo(new Launch(0, "LaunchType" + 0, "Launch" + 0))));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	public void testAddConfiguration() throws CoreException {
+		CompositeLaunchConfigurationTabViewModel viewModel = createViewModel();
+		viewModel.restoreConfiguration(mock(ILaunchConfiguration.class));
+		
+		assertThat(viewModel.getResultLaunchConfigurations(),
+				containsInAnyOrder(Matchers.equalTo(new Launch(0, "LaunchType" + 0, "Launch" + 0))));
+		
+		viewModel.addLaunchConfigurationToCompositeLaunch(1);
+		
+		Matcher<Launch> expectedLaunches[] = new Matcher[] {
+			Matchers.equalTo(new Launch(0, "LaunchType" + 0, "Launch" + 0)),
+			Matchers.equalTo(new Launch(1, "LaunchType" + 1, "Launch" + 1))
+		};
+		assertThat(viewModel.getResultLaunchConfigurations(), containsInAnyOrder(expectedLaunches));
+	}
+	
 	@SuppressWarnings("unchecked")
 	private void setupLaunchConfigurations() throws CoreException {
 		int size = 5;
