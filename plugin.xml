@@ -20,14 +20,6 @@
    </launchDelegate>
 </extension>
 <extension
-      point="org.eclipse.debug.core.sourceLocators">
-   <sourceLocator
-         class="ru.santaev.SourceLocator"
-         id="CompositeLaunchConfiguration.sourceLocator"
-         name="name">
-   </sourceLocator>
-</extension>
-<extension
       point="org.eclipse.debug.ui.launchConfigurationTabGroups">
    <launchConfigurationTabGroup
          class="ru.santaev.view.CompositeLaunchConfigurationTabGroup"
