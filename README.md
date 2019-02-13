@@ -2,8 +2,8 @@
 
 # Get started
 
-Before build need to fetch dependencies:
+Before build need to fetch dependencies run script:
 ```
-mvn dependency:copy-dependencies -DoutputDirectory=libs
+./fetchDependencies.sh
 ```
-
+This command run `maven` command to download dependencies to `lib/` directory.
