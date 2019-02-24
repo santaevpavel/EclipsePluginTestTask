@@ -124,6 +124,8 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 		public List resultLaunchConfigurationsList;
 		public Composite root;
 		public Button removeButton;
+		public Button upButton;
+		public Button downButton;
 		public Button addButton;
 	}
 }

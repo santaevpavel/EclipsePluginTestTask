@@ -23,12 +23,15 @@ public class CompositeLaunchConfigurationTabControlCreator implements IComposite
 		List allLaunchConfigurationsList = createAllLaunchConfigurationsList(composite);
 		Button addButton = createAddButton(composite);
 		List resultLaunchConfigurationsList = createResultLaunchConfigurationsList(composite);	
-		Button removeButton = createRemoveButton(composite);
+		
+		EditGroupControls editControls = createEditLaunchesControlGroup(composite);
 		
 		result.allLaunchConfigurationsList = allLaunchConfigurationsList;
 		result.resultLaunchConfigurationsList = resultLaunchConfigurationsList;
 		result.root = composite;
-		result.removeButton = removeButton;
+		result.removeButton = editControls.removeButton;
+		result.upButton = editControls.upButton;
+		result.downButton = editControls.downButton;
 		result.addButton = addButton;
 		return result;
 	}
@@ -53,15 +56,36 @@ public class CompositeLaunchConfigurationTabControlCreator implements IComposite
 		return resultLaunchConfigurationsList;
 	}
 	
-	private Button createRemoveButton(Composite parent) {
-		Button button = new Button(parent, SWT.PUSH);
-		button.setText("Remove");
-		return button;
+	private EditGroupControls createEditLaunchesControlGroup(Composite parent) {
+		Group editConfigurationsGroup = new Group(parent, SWT.NONE);
+		editConfigurationsGroup.setText("Edit");
+		GridLayout layout = new GridLayout(1, false);
+		editConfigurationsGroup.setLayout(layout);
+		editConfigurationsGroup.setLayoutData(new GridData(SWT.FILL, SWT.FILL, false, true));
+		
+		Button buttonRemove = new Button(editConfigurationsGroup, SWT.PUSH);
+		buttonRemove.setText("Remove");
+		Button buttonUp = new Button(editConfigurationsGroup, SWT.PUSH);
+		buttonUp.setText("Up");
+		Button buttonDown = new Button(editConfigurationsGroup, SWT.PUSH);
+		buttonDown.setText("Down");
+		
+		EditGroupControls controls = new EditGroupControls();
+		controls.removeButton = buttonRemove;
+		controls.upButton = buttonUp;
+		controls.downButton = buttonDown;
+		return controls;
 	}
 	
 	private Button createAddButton(Composite parent) {
 		Button button = new Button(parent, SWT.PUSH);
 		button.setText(">>");
 		return button;
+	}
+	
+	private class EditGroupControls {
+		public Button removeButton;
+		public Button upButton;
+		public Button downButton;
 	}
 }
