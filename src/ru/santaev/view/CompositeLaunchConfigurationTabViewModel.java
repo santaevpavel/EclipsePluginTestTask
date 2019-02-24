@@ -22,6 +22,9 @@ import ru.santaev.utils.Check;
 
 public class CompositeLaunchConfigurationTabViewModel {
 
+	private static final int MOVE_DIFF_UP = -1;
+	private static final int MOVE_DIFF_DOWN = 1;
+	
 	private ObservableList<Launch> allLaunchConfigurations = FXCollections.observableArrayList();
 	private ObservableList<Launch> resultLaunchConfigurations = FXCollections.observableArrayList();
 	private SimpleBooleanProperty isBroken = new SimpleBooleanProperty(false); 
@@ -81,6 +84,27 @@ public class CompositeLaunchConfigurationTabViewModel {
 		}
 	}
 
+	public void moveUp(int selectionIdx) {
+		if (selectionIdx == 0) {
+			return;
+		}
+		moveItemInList(resultLaunchConfigurations, selectionIdx, MOVE_DIFF_UP);
+		moveItemInList(rawResultLaunchConfigurations, selectionIdx, MOVE_DIFF_UP);
+	}
+	
+	public void moveDown(int selectionIdx) {
+		if (selectionIdx == resultLaunchConfigurations.size() - 1) {
+			return;
+		}
+		moveItemInList(resultLaunchConfigurations, selectionIdx, MOVE_DIFF_DOWN);
+		moveItemInList(rawResultLaunchConfigurations, selectionIdx, MOVE_DIFF_DOWN);
+	}
+	
+	private <T> void moveItemInList(List<T> list, int idx, int diff) {
+		T toMove = list.remove(idx);
+		list.add(idx + diff, toMove);
+	}
+	
 	private void restoreFromLaunchConfigurationData(CompositeLaunchConfiguration data) {
 		rawResultLaunchConfigurations.clear();
 		resultLaunchConfigurations.clear();

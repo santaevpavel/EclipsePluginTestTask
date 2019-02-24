@@ -8,8 +8,6 @@ import org.eclipse.debug.ui.AbstractLaunchConfigurationTab;
 import org.eclipse.debug.ui.ILaunchConfigurationDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
@@ -18,6 +16,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.collections.ListChangeListener;
 import ru.santaev.factories.FactoryProvider;
 import ru.santaev.view.CompositeLaunchConfigurationTabViewModel.Launch;
+import ru.santaev.view.utils.SelectionListenerAdapter;
 
 public class CompositeLaunchConfigurationTab extends AbstractLaunchConfigurationTab {
 
@@ -35,38 +34,11 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 		controls = controlCreator.create(parent);
 		setControl(controls.root);
 
-		controls.removeButton.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int selectionIdx = controls.resultLaunchConfigurationsList.getSelectionIndex();
-				if (selectionIdx < 0) {
-					return;
-				}
-				viewModel.removeLaunchConfigurationFromCompositeLaunch(selectionIdx);
-				scheduleUpdateJob();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		controls.addButton.addSelectionListener(new SelectionListener() {
-
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				int selectionIdx = controls.allLaunchConfigurationsList.getSelectionIndex();
-				if (selectionIdx < 0) {
-					return;
-				}
-				viewModel.addLaunchConfigurationToCompositeLaunch(selectionIdx);
-				scheduleUpdateJob();
-			}
-
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
+		controls.removeButton.addSelectionListener(new SelectionListenerAdapter((e) -> onClickRemove()));
+		controls.addButton.addSelectionListener(new SelectionListenerAdapter((e) -> onClickAdd()));
+		controls.upButton.addSelectionListener(new SelectionListenerAdapter((e) -> onClickUp()));
+		controls.downButton.addSelectionListener(new SelectionListenerAdapter((e) -> onClickDown()));
+		
 		viewModel.getAllLaunchConfigurations()
 				.addListener((ListChangeListener<Launch>) c -> onAllLaunchesListChanged());
 		viewModel.getResultLaunchConfigurations()
@@ -117,6 +89,42 @@ public class CompositeLaunchConfigurationTab extends AbstractLaunchConfiguration
 						Message.MESSAGE_BROKEN_CONFIGURATION, SWT.NONE);
 			});
 		}
+	}
+
+	private void onClickRemove() {
+		int selectionIdx = controls.resultLaunchConfigurationsList.getSelectionIndex();
+		if (selectionIdx < 0) {
+			return;
+		}
+		viewModel.removeLaunchConfigurationFromCompositeLaunch(selectionIdx);
+		scheduleUpdateJob();
+	}
+	
+	private void onClickAdd() {
+		int selectionIdx = controls.allLaunchConfigurationsList.getSelectionIndex();
+		if (selectionIdx < 0) {
+			return;
+		}
+		viewModel.addLaunchConfigurationToCompositeLaunch(selectionIdx);
+		scheduleUpdateJob();
+	}
+	
+	private void onClickUp() {
+		int selectionIdx = controls.resultLaunchConfigurationsList.getSelectionIndex();
+		if (selectionIdx < 0) {
+			return;
+		}
+		viewModel.moveUp(selectionIdx);
+		scheduleUpdateJob();
+	}
+
+	private void onClickDown() {
+		int selectionIdx = controls.resultLaunchConfigurationsList.getSelectionIndex();
+		if (selectionIdx < 0) {
+			return;
+		}
+		viewModel.moveDown(selectionIdx);
+		scheduleUpdateJob();
 	}
 
 	protected static class Controls {
